@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0a0a0f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Fiscal de Prova — Portugol Web Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg-void: #080810;
+  --bg-deep: #0d0d1a;
+  --bg-panel: #111122;
+  --bg-card: #161628;
+  --bg-elevated: #1c1c35;
+  --border: rgba(120,120,255,0.12);
+  --border-bright: rgba(120,120,255,0.28);
+  --accent: #5b5bff;
+  --accent-glow: #7b7bff;
+  --accent-dim: rgba(91,91,255,0.15);
+  --green: #00e5a0;
+  --green-dim: rgba(0,229,160,0.15);
+  --red: #ff4a6b;
+  --red-dim: rgba(255,74,107,0.15);
+  --amber: #ffb830;
+  --amber-dim: rgba(255,184,48,0.12);
+  --text-primary: #e8e8ff;
+  --text-secondary: #888ab0;
+  --text-muted: #4a4a6a;
+  --mono: 'JetBrains Mono', monospace;
+  --display: 'Syne', sans-serif;
+  --radius: 8px;
+  --radius-lg: 14px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body {
+  height: 100%; width: 100%;
+  background: var(--bg-void);
+  color: var(--text-primary);
+  font-family: var(--display);
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ─── SCREENS ─────────────────────────────── */
+.screen { position: fixed; inset: 0; display: none; flex-direction: column; }
+.screen.active { display: flex; }
+
+/* ─── PARTICLE BG ─────────────────────────── */
+#particles { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+
+/* ─── LOGIN ───────────────────────────────── */
+#login-screen { align-items: center; justify-content: center; background: var(--bg-void); z-index: 10; }
+.login-wrap { position: relative; z-index: 2; width: 100%; max-width: 440px; padding: 0 24px; }
+.logo-badge { display: flex; align-items: center; gap: 10px; margin-bottom: 40px; }
+.logo-icon {
+  width: 40px; height: 40px; background: var(--accent); border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; color: #fff; font-weight: 700; font-family: var(--mono);
+}
+.logo-text { font-size: 11px; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-secondary); line-height: 1.4; }
+.login-headline {
+  font-size: clamp(28px, 6vw, 42px); font-weight: 800; line-height: 1.1; margin-bottom: 8px;
+  background: linear-gradient(135deg, #e8e8ff 0%, #5b5bff 60%, #00e5a0 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.login-sub { font-size: 14px; color: var(--text-secondary); margin-bottom: 40px; line-height: 1.6; }
+.field-group { margin-bottom: 20px; }
+.field-label { display: block; font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 8px; }
+.field-input {
+  width: 100%; padding: 14px 18px; background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: var(--radius); color: var(--text-primary); font-family: var(--display); font-size: 15px;
+  transition: border-color 0.2s, box-shadow 0.2s; outline: none;
+}
+.field-input::placeholder { color: var(--text-muted); }
+.field-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); }
+.btn-start {
+  width: 100%; padding: 16px; background: var(--accent); border: none; border-radius: var(--radius);
+  color: #fff; font-family: var(--display); font-size: 15px; font-weight: 700; letter-spacing: 0.04em;
+  cursor: pointer; transition: transform 0.15s, box-shadow 0.2s; margin-top: 8px; position: relative; overflow: hidden;
+}
+.btn-start:hover { transform: translateY(-1px); box-shadow: 0 8px 24px rgba(91,91,255,0.4); }
+.btn-start:active { transform: translateY(0); }
+.btn-start::after { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent); }
+.security-badges { display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap; }
+.sec-badge { font-size: 11px; color: var(--text-muted); font-family: var(--mono); display: flex; align-items: center; gap: 5px; }
+.sec-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); }
+
+/* ─── EXAM ────────────────────────────────── */
+#exam-screen { z-index: 5; }
+.top-bar {
+  height: 52px; min-height: 52px; background: var(--bg-panel); border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; padding: 0 16px; gap: 12px; flex-shrink: 0; position: relative; z-index: 100;
+}
+.top-bar-left { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+.bar-logo { font-size: 12px; font-weight: 700; font-family: var(--mono); color: var(--accent); letter-spacing: 0.08em; white-space: nowrap; }
+.bar-sep { width: 1px; height: 20px; background: var(--border-bright); }
+.bar-student { font-size: 13px; font-weight: 600; color: var(--text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bar-class { font-size: 11px; color: var(--text-secondary); font-family: var(--mono); white-space: nowrap; }
+.top-bar-center { display: flex; align-items: center; gap: 8px; }
+.timer-display {
+  font-family: var(--mono); font-size: 16px; font-weight: 700; color: var(--green); letter-spacing: 0.06em;
+  background: var(--green-dim); padding: 4px 12px; border-radius: 6px; border: 1px solid rgba(0,229,160,0.2);
+}
+.top-bar-right { display: flex; align-items: center; gap: 8px; flex: 1; justify-content: flex-end; }
+.status-pill {
+  display: flex; align-items: center; gap: 5px; font-size: 11px; font-family: var(--mono); font-weight: 500;
+  padding: 4px 10px; border-radius: 20px; border: 1px solid;
+}
+.status-pill.ok  { color: var(--green); border-color: rgba(0,229,160,0.25); background: var(--green-dim); }
+.status-pill.warn{ color: var(--amber); border-color: rgba(255,184,48,0.25); background: var(--amber-dim); }
+.status-pill.bad { color: var(--red);   border-color: rgba(255,74,107,0.25);  background: var(--red-dim); }
+.pulse-dot { width: 6px; height: 6px; border-radius: 50%; animation: pulse-anim 1.8s ease-in-out infinite; }
+.ok  .pulse-dot { background: var(--green); }
+.warn .pulse-dot { background: var(--amber); }
+.bad  .pulse-dot { background: var(--red); }
+@keyframes pulse-anim { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)} }
+.infraction-counter {
+  font-family: var(--mono); font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 6px;
+  background: var(--red-dim); color: var(--red); border: 1px solid rgba(255,74,107,0.25);
+}
+.exam-body { flex: 1; display: flex; overflow: hidden; position: relative; }
+#portugol-frame { flex: 1; border: none; width: 100%; height: 100%; background: #fff; }
+.frame-overlay {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  background: var(--bg-deep); z-index: 10; flex-direction: column; gap: 16px;
+}
+.frame-overlay.hidden { display: none; }
+.loader-ring { width: 48px; height: 48px; border-radius: 50%; border: 3px solid var(--border-bright); border-top-color: var(--accent); animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loader-text { font-size: 13px; color: var(--text-secondary); font-family: var(--mono); }
+
+/* ─── BTN CONCLUIR ────────────────────────── */
+.btn-finish {
+  padding: 6px 14px; border-radius: 6px; font-size: 12px; font-weight: 700; font-family: var(--mono);
+  cursor: pointer; border: 1px solid rgba(0,229,160,0.4); background: var(--green-dim); color: var(--green);
+  transition: all 0.15s; white-space: nowrap;
+}
+.btn-finish:hover { background: rgba(0,229,160,0.25); }
+
+/* ─── FULLSCREEN BTN ──────────────────────── */
+.fullscreen-btn {
+  padding: 5px 10px; border-radius: 6px; background: var(--accent-dim);
+  border: 1px solid rgba(91,91,255,0.3); color: var(--accent-glow);
+  font-size: 11px; font-family: var(--mono); cursor: pointer; font-weight: 600; white-space: nowrap;
+}
+
+/* ─── ALERT ───────────────────────────────── */
+#alert-overlay {
+  position: fixed; inset: 0; background: rgba(255,74,107,0.08); border: 3px solid var(--red);
+  z-index: 9999; pointer-events: none; display: none; animation: alert-flash 0.3s ease;
+}
+#alert-overlay.active { display: block; }
+@keyframes alert-flash { 0%{opacity:0} 30%{opacity:1} 100%{opacity:1} }
+#alert-toast {
+  position: fixed; top: 70px; left: 50%; transform: translateX(-50%);
+  background: var(--red); color: #fff; padding: 12px 24px; border-radius: var(--radius);
+  font-size: 13px; font-weight: 700; font-family: var(--mono); z-index: 10000; display: none;
+  box-shadow: 0 8px 32px rgba(255,74,107,0.5); white-space: nowrap;
+  animation: toast-in 0.3s cubic-bezier(0.34,1.56,0.64,1);
+}
+@keyframes toast-in { from{transform:translateX(-50%) translateY(-20px) scale(.9);opacity:0} to{transform:translateX(-50%) translateY(0) scale(1);opacity:1} }
+#alert-toast.active { display: block; }
+
+/* ─── BLOCKED ─────────────────────────────── */
+#blocked-screen { z-index: 9998; background: var(--bg-void); align-items: center; justify-content: center; text-align: center; padding: 32px; }
+.blocked-icon { font-size: 64px; margin-bottom: 24px; animation: shake 0.5s ease; }
+@keyframes shake { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-12px)} 40%{transform:translateX(12px)} 60%{transform:translateX(-8px)} 80%{transform:translateX(8px)} }
+.blocked-title { font-size: 32px; font-weight: 800; color: var(--red); margin-bottom: 12px; }
+.blocked-sub { font-size: 14px; color: var(--text-secondary); max-width: 360px; line-height: 1.6; }
+.blocked-count { font-size: 64px; font-weight: 800; font-family: var(--mono); color: var(--red); }
+
+/* ─── CONCLUDED ───────────────────────────── */
+#concluded-screen { z-index: 9997; background: var(--bg-void); align-items: center; justify-content: center; text-align: center; padding: 32px; }
+.concluded-icon { font-size: 72px; margin-bottom: 24px; animation: pop-in 0.5s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes pop-in { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+.concluded-title { font-size: 36px; font-weight: 800; color: var(--green); margin-bottom: 12px; }
+.concluded-sub { font-size: 15px; color: var(--text-secondary); max-width: 400px; line-height: 1.7; }
+.concluded-card {
+  background: var(--bg-card); border: 1px solid rgba(0,229,160,0.2); border-radius: var(--radius-lg);
+  padding: 24px 32px; margin-top: 28px; display: flex; flex-direction: column; gap: 12px;
+  min-width: 320px; text-align: left;
+}
+.concluded-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; }
+.concluded-row .lbl { color: var(--text-muted); font-family: var(--mono); }
+.concluded-row .val { font-weight: 600; font-family: var(--mono); }
+.concluded-row .val.green { color: var(--green); }
+.concluded-row .val.red { color: var(--red); }
+.concluded-row .val.amber { color: var(--amber); }
+.concluded-msg {
+  margin-top: 24px; font-size: 13px; color: var(--text-muted); font-family: var(--mono);
+  background: var(--green-dim); border: 1px solid rgba(0,229,160,0.2); border-radius: var(--radius);
+  padding: 12px 20px; max-width: 400px; line-height: 1.6; text-align: center;
+}
+
+/* ─── TEACHER ─────────────────────────────── */
+#teacher-screen { z-index: 20; background: var(--bg-void); flex-direction: column; }
+.teacher-header {
+  padding: 20px 28px; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+}
+.teacher-title { font-size: 20px; font-weight: 700; }
+.teacher-subtitle { font-size: 12px; color: var(--text-secondary); font-family: var(--mono); }
+.teacher-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn-sm {
+  padding: 8px 16px; border-radius: var(--radius); font-size: 12px; font-weight: 600; font-family: var(--mono);
+  cursor: pointer; border: 1px solid var(--border); background: var(--bg-card);
+  color: var(--text-secondary); transition: all 0.15s;
+}
+.btn-sm:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+.btn-sm.danger { border-color: rgba(255,74,107,0.3); color: var(--red); background: var(--red-dim); }
+.btn-sm.primary { border-color: var(--accent); color: #fff; background: var(--accent); }
+.btn-sm.success { border-color: rgba(0,229,160,0.3); color: var(--green); background: var(--green-dim); }
+.teacher-body { flex: 1; overflow-y: auto; padding: 20px 28px; display: flex; flex-direction: column; gap: 20px; }
+.teacher-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.stat-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px; }
+.stat-label { font-size: 11px; color: var(--text-muted); font-family: var(--mono); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+.stat-value { font-size: 28px; font-weight: 700; font-family: var(--mono); color: var(--text-primary); }
+.stat-value.green { color: var(--green); }
+.stat-value.red   { color: var(--red); }
+.stat-value.amber { color: var(--amber); }
+.students-table { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+.table-head {
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 110px;
+  padding: 10px 16px; border-bottom: 1px solid var(--border);
+  font-size: 11px; font-family: var(--mono); font-weight: 600;
+  color: var(--text-muted); letter-spacing: 0.1em; text-transform: uppercase; gap: 12px;
+}
+.student-row {
+  display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 110px;
+  padding: 12px 16px; border-bottom: 1px solid var(--border);
+  font-size: 13px; align-items: center; gap: 12px; transition: background 0.15s;
+}
+.student-row:hover { background: var(--bg-elevated); }
+.student-row:last-child { border-bottom: none; }
+.st-name { font-weight: 600; }
+.st-class { font-size: 11px; color: var(--text-secondary); font-family: var(--mono); }
+.st-time { font-family: var(--mono); font-size: 13px; }
+.infraction-badge { display: inline-block; padding: 3px 8px; border-radius: 20px; font-size: 11px; font-family: var(--mono); font-weight: 700; }
+.inf-0   { background: var(--green-dim); color: var(--green); }
+.inf-low { background: var(--amber-dim); color: var(--amber); }
+.inf-high{ background: var(--red-dim);   color: var(--red); }
+.online-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); display: inline-block; margin-right: 6px; animation: pulse-anim 2s infinite; }
+.logs-panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+.logs-header { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 12px; font-weight: 700; color: var(--text-secondary); font-family: var(--mono); letter-spacing: 0.1em; text-transform: uppercase; }
+.logs-body { max-height: 340px; overflow-y: auto; }
+.log-entry { display: flex; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 12px; align-items: flex-start; }
+.log-time { color: var(--text-muted); white-space: nowrap; }
+.log-type { padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; white-space: nowrap; text-transform: uppercase; }
+.log-warn   { background: var(--amber-dim); color: var(--amber); }
+.log-danger { background: var(--red-dim);   color: var(--red); }
+.log-info   { background: var(--accent-dim); color: var(--accent-glow); }
+.log-success{ background: var(--green-dim); color: var(--green); }
+.log-msg { color: var(--text-secondary); flex: 1; }
+
+/* ─── LANDSCAPE LOCK ──────────────────────── */
+#landscape-lock { position: fixed; inset: 0; background: var(--bg-void); z-index: 99999; display: none; align-items: center; justify-content: center; flex-direction: column; gap: 20px; text-align: center; padding: 32px; }
+#landscape-lock.show { display: flex; }
+.rotate-icon { font-size: 64px; animation: rotate-anim 2s ease-in-out infinite; }
+@keyframes rotate-anim { 0%,100%{transform:rotate(0deg)} 50%{transform:rotate(90deg)} }
+
+/* ─── MODALS ──────────────────────────────── */
+.modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.75); z-index: 10000; display: none; align-items: center; justify-content: center; }
+.modal-backdrop.show { display: flex; }
+.modal-box { background: var(--bg-panel); border: 1px solid var(--border-bright); border-radius: var(--radius-lg); padding: 28px; width: 380px; max-width: 90vw; }
+.modal-title { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+.modal-sub { font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.6; }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+
+/* ─── NAV TABS ────────────────────────────── */
+.nav-tabs { display: flex; gap: 4px; }
+.nav-tab { padding: 6px 14px; border-radius: var(--radius); font-size: 12px; font-weight: 600; font-family: var(--mono); cursor: pointer; border: 1px solid var(--border); background: transparent; color: var(--text-secondary); transition: all 0.15s; }
+.nav-tab.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent-glow); }
+.tab-panel { display: none; }
+.tab-panel.active { display: flex; flex-direction: column; gap: 16px; }
+
+/* ─── WATERMARK ───────────────────────────── */
+.watermark { position: fixed; bottom: 16px; right: 16px; font-size: 10px; font-family: var(--mono); color: var(--text-muted); z-index: 200; pointer-events: none; opacity: 0.5; }
+
+/* ─── MOBILE ──────────────────────────────── */
+@media (max-width: 640px) {
+  .table-head, .student-row { grid-template-columns: 2fr 1fr 1fr; }
+  .table-head > :nth-child(4), .student-row > :nth-child(4),
+  .table-head > :nth-child(5), .student-row > :nth-child(5) { display: none; }
+  .top-bar-center { display: none; }
+  .bar-class { display: none; }
+  .btn-finish span.label { display: none; }
+}
+
+/* ─── SCROLLBAR ───────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 3px; }
+
+/* ─── NEW ALERT badge in teacher ─────────── */
+.new-badge {
+  display: inline-block; background: var(--red); color: #fff; font-size: 9px;
+  font-family: var(--mono); font-weight: 700; padding: 2px 5px; border-radius: 4px;
+  margin-left: 6px; animation: pulse-anim 1s infinite; vertical-align: middle;
+}
+</style>
+</head>
+<body>
+
+<canvas id="particles"></canvas>
+<div id="alert-overlay"></div>
+<div id="alert-toast">⚠ INFRAÇÃO DETECTADA</div>
+
+<!-- LANDSCAPE LOCK -->
+<div id="landscape-lock">
+  <div class="rotate-icon">📱</div>
+  <div style="font-size:20px;font-weight:700;">Modo paisagem obrigatório</div>
+  <div style="font-size:14px;color:var(--text-secondary);line-height:1.6;">Gire o dispositivo para o modo horizontal para continuar a avaliação.</div>
+</div>
+
+<!-- MODAL: Senha Professor -->
+<div class="modal-backdrop" id="teacher-modal">
+  <div class="modal-box">
+    <div class="modal-title">🔐 Painel do Professor</div>
+    <div class="modal-sub">Insira a senha de acesso ao painel administrativo.</div>
+    <label class="field-label">Senha</label>
+    <input type="password" class="field-input" id="teacher-pw" placeholder="Digite a senha...">
+    <div style="font-size:11px;color:var(--text-muted);margin-top:8px;font-family:var(--mono);">Senha padrão: professor123</div>
+    <div class="modal-actions">
+      <button class="btn-sm" onclick="closeModal('teacher-modal')">Cancelar</button>
+      <button class="btn-sm primary" onclick="checkTeacherPw()">Entrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Confirmar conclusão -->
+<div class="modal-backdrop" id="finish-modal">
+  <div class="modal-box">
+    <div class="modal-title">✅ Concluir Avaliação?</div>
+    <div class="modal-sub">
+      Tem certeza que deseja <strong style="color:var(--text-primary)">entregar a avaliação</strong>?<br>
+      Esta ação não pode ser desfeita. Certifique-se de que seu código está salvo no Portugol antes de confirmar.
+    </div>
+    <div style="background:var(--amber-dim);border:1px solid rgba(255,184,48,0.25);border-radius:var(--radius);padding:12px 16px;font-size:12px;font-family:var(--mono);color:var(--amber);line-height:1.6;">
+      ⚠ Salve seu código no Portugol Web Studio antes de confirmar a entrega.
+    </div>
+    <div class="modal-actions">
+      <button class="btn-sm" onclick="closeModal('finish-modal')">Cancelar — voltar à prova</button>
+      <button class="btn-sm success" onclick="concludeExam()">✓ Confirmar entrega</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Encerrar aluno (professor) -->
+<div class="modal-backdrop" id="end-student-modal">
+  <div class="modal-box">
+    <div class="modal-title">Encerrar prova do aluno?</div>
+    <div class="modal-sub" id="end-student-msg">Deseja encerrar a prova deste aluno?</div>
+    <div class="modal-actions">
+      <button class="btn-sm" onclick="closeModal('end-student-modal')">Cancelar</button>
+      <button class="btn-sm danger" onclick="confirmEndStudent()">Encerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ SCREEN 1 — LOGIN ══════════════════ -->
+<div class="screen active" id="login-screen">
+  <div class="login-wrap">
+    <div class="logo-badge">
+      <div class="logo-icon">PW</div>
+      <div class="logo-text">Portugol Web Studio<br>Sistema de Avaliação</div>
+    </div>
+    <h1 class="login-headline">Fiscal<br>de Prova</h1>
+    <p class="login-sub">Ambiente seguro para avaliações de Lógica de Programação. Preencha seus dados para iniciar.</p>
+    <div class="field-group">
+      <label class="field-label" for="f-name">Nome completo do aluno</label>
+      <input type="text" class="field-input" id="f-name" placeholder="Ex: João Silva Souza" autocomplete="off" spellcheck="false">
+    </div>
+    <div class="field-group">
+      <label class="field-label" for="f-matricula">Matrícula / Turma</label>
+      <input type="text" class="field-input" id="f-matricula" placeholder="Ex: 2024001 — Turma A" autocomplete="off" spellcheck="false" onkeydown="if(event.key==='Enter')startExam()">
+    </div>
+    <button class="btn-start" onclick="startExam()">Iniciar Avaliação →</button>
+    <div style="margin-top:16px;text-align:center;">
+      <button style="background:transparent;border:none;color:var(--text-muted);font-size:11px;cursor:pointer;font-family:var(--mono);" onclick="openTeacherModal()">⚙ Painel do Professor</button>
+    </div>
+    <div class="security-badges">
+      <span class="sec-badge"><span class="sec-dot"></span>Modo seguro</span>
+      <span class="sec-badge"><span class="sec-dot"></span>Antifraude ativo</span>
+      <span class="sec-badge"><span class="sec-dot"></span>Monitoramento em tempo real</span>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ SCREEN 2 — EXAM ═══════════════════ -->
+<div class="screen" id="exam-screen">
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <span class="bar-logo">FISCAL•PW</span>
+      <div class="bar-sep"></div>
+      <div>
+        <div class="bar-student" id="bar-name">—</div>
+        <div class="bar-class" id="bar-class">—</div>
+      </div>
+    </div>
+    <div class="top-bar-center">
+      <div class="timer-display" id="timer-el">00:00:00</div>
+    </div>
+    <div class="top-bar-right">
+      <div class="status-pill ok" id="conn-pill">
+        <div class="pulse-dot"></div>
+        <span id="conn-txt">Online</span>
+      </div>
+      <div class="infraction-counter" id="inf-counter" title="Infrações detectadas">
+        ⚠ <span id="inf-num">0</span>
+      </div>
+      <button class="fullscreen-btn" onclick="goFullscreen()">⛶ Tela cheia</button>
+      <button class="btn-finish" onclick="openModal('finish-modal')">
+        ✓ <span class="label">Entregar prova</span>
+      </button>
+    </div>
+  </div>
+  <div class="exam-body">
+    <div class="frame-overlay" id="frame-loading">
+      <div class="loader-ring"></div>
+      <div class="loader-text">Carregando Portugol Web Studio...</div>
+    </div>
+    <iframe
+      id="portugol-frame"
+      src="https://portugol.dev/"
+      title="Portugol Web Studio"
+      sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-downloads"
+      allow="clipboard-read; clipboard-write"
+      onload="document.getElementById('frame-loading').classList.add('hidden')"
+    ></iframe>
+  </div>
+</div>
+
+<!-- ═══════════════ SCREEN 3 — BLOCKED ═══════════════ -->
+<div class="screen" id="blocked-screen">
+  <div class="blocked-icon">🚫</div>
+  <div class="blocked-title">Avaliação Bloqueada</div>
+  <div style="margin:12px 0;">
+    <div class="blocked-count" id="blocked-num">0</div>
+    <div style="font-size:14px;color:var(--text-muted);font-family:var(--mono);">infrações registradas</div>
+  </div>
+  <div class="blocked-sub">Número máximo de infrações atingido. Sua avaliação foi encerrada automaticamente. Procure o professor imediatamente.</div>
+  <div style="margin-top:32px;font-family:var(--mono);font-size:11px;color:var(--text-muted);">Todos os eventos foram registrados e salvos.</div>
+</div>
+
+<!-- ═══════════════ SCREEN 4 — CONCLUDED ═════════════ -->
+<div class="screen" id="concluded-screen">
+  <div class="concluded-icon">🎉</div>
+  <div class="concluded-title">Avaliação Entregue!</div>
+  <div class="concluded-sub">Sua avaliação foi concluída e registrada com sucesso. Aguarde as orientações do professor.</div>
+  <div class="concluded-card" id="concluded-summary">
+    <div class="concluded-row"><span class="lbl">Aluno</span><span class="val" id="cs-name">—</span></div>
+    <div class="concluded-row"><span class="lbl">Matrícula/Turma</span><span class="val" id="cs-class">—</span></div>
+    <div class="concluded-row"><span class="lbl">Duração total</span><span class="val green" id="cs-time">—</span></div>
+    <div class="concluded-row"><span class="lbl">Infrações registradas</span><span class="val" id="cs-inf">—</span></div>
+    <div class="concluded-row"><span class="lbl">Horário de entrega</span><span class="val" id="cs-finish">—</span></div>
+  </div>
+  <div class="concluded-msg">✓ Você pode fechar esta janela. O professor recebeu sua entrega no painel de monitoramento.</div>
+</div>
+
+<!-- ═══════════════ SCREEN 5 — TEACHER ═══════════════ -->
+<div class="screen" id="teacher-screen">
+  <div class="teacher-header">
+    <div>
+      <div class="teacher-title">Painel do Professor</div>
+      <div class="teacher-subtitle" id="teacher-datetime">—</div>
+    </div>
+    <div class="teacher-actions">
+      <div class="nav-tabs">
+        <button class="nav-tab active" id="tab-btn-students" onclick="switchTab('students')">Alunos</button>
+        <button class="nav-tab" id="tab-btn-logs" onclick="switchTab('logs')">Logs</button>
+        <button class="nav-tab" id="tab-btn-config" onclick="switchTab('config')">Config</button>
+      </div>
+      <button class="btn-sm danger" onclick="exportReport()">↓ Relatório</button>
+      <button class="btn-sm" onclick="closeTeacher()">← Sair</button>
+    </div>
+  </div>
+  <div class="teacher-body">
+
+    <!-- STUDENTS TAB -->
+    <div class="tab-panel active" id="tab-students">
+      <div class="teacher-stats">
+        <div class="stat-card">
+          <div class="stat-label">Em avaliação</div>
+          <div class="stat-value green" id="ts-online">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Concluídos</div>
+          <div class="stat-value" id="ts-finished" style="color:var(--accent-glow)">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total infrações</div>
+          <div class="stat-value red" id="ts-infractions">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Bloqueados</div>
+          <div class="stat-value amber" id="ts-blocked">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Tempo médio</div>
+          <div class="stat-value" id="ts-avgtime">00:00</div>
+        </div>
+      </div>
+      <div class="students-table">
+        <div class="table-head">
+          <div>Aluno / Matrícula</div>
+          <div>Tempo</div>
+          <div>Infrações</div>
+          <div>Status</div>
+          <div>Ações</div>
+        </div>
+        <div id="students-list">
+          <div style="padding:40px;text-align:center;color:var(--text-muted);font-family:var(--mono);font-size:13px;">
+            Nenhum aluno em avaliação ainda.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOGS TAB -->
+    <div class="tab-panel" id="tab-logs">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div style="font-size:13px;font-weight:600;">Histórico de eventos da sessão</div>
+        <button class="btn-sm" onclick="clearLogs()">Limpar</button>
+      </div>
+      <div class="logs-panel">
+        <div class="logs-header" id="logs-count-header">Log de Eventos — 0 registros</div>
+        <div class="logs-body" id="logs-body">
+          <div style="padding:24px;text-align:center;color:var(--text-muted);font-family:var(--mono);font-size:12px;">Aguardando eventos...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONFIG TAB -->
+    <div class="tab-panel" id="tab-config">
+      <div class="stat-card" style="display:flex;flex-direction:column;gap:24px;">
+        <div>
+          <div class="stat-label" style="margin-bottom:10px;">Limite de infrações antes do bloqueio automático</div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <input type="range" min="3" max="20" value="5" id="cfg-inf-limit" style="flex:1;" oninput="document.getElementById('cfg-inf-val').textContent=this.value">
+            <span style="font-family:var(--mono);font-size:14px;color:var(--text-primary);min-width:24px;" id="cfg-inf-val">5</span>
+            <span style="font-size:12px;color:var(--text-secondary);">infrações</span>
+          </div>
+        </div>
+        <div>
+          <div class="stat-label" style="margin-bottom:10px;">Duração máxima da prova (0 = sem limite)</div>
+          <div style="display:flex;align-items:center;gap:12px;">
+            <input type="range" min="0" max="240" value="120" step="10" id="cfg-duration" style="flex:1;" oninput="document.getElementById('cfg-dur-val').textContent=this.value">
+            <span style="font-family:var(--mono);font-size:14px;color:var(--text-primary);min-width:24px;" id="cfg-dur-val">120</span>
+            <span style="font-size:12px;color:var(--text-secondary);">min</span>
+          </div>
+        </div>
+        <div>
+          <div class="stat-label" style="margin-bottom:10px;">URL do editor</div>
+          <input type="text" class="field-input" id="cfg-url" value="https://portugol.dev/" style="font-family:var(--mono);font-size:13px;">
+        </div>
+        <div>
+          <div class="stat-label" style="margin-bottom:10px;">Nova senha do painel (opcional)</div>
+          <input type="password" class="field-input" id="cfg-pw" placeholder="Deixe em branco para manter a atual" style="font-family:var(--mono);font-size:13px;">
+        </div>
+        <button class="btn-sm primary" onclick="applyConfig()" style="align-self:flex-start;padding:10px 24px;">✓ Aplicar configurações</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="watermark" id="wm">FISCAL-PW v2.0</div>
+
+<script>
+// ══════════════════════════════════════════════
+//  STATE
+// ══════════════════════════════════════════════
+let studentName = '';
+let studentClass = '';
+let examStartTime = null;
+let examTimerInterval = null;
+let infractionCount = 0;
+let MAX_INFRACTIONS = 5;
+let EXAM_DURATION = 120 * 60;
+let isExamActive = false;
+let sessionStudents = [];   // shared state — both exam screen and teacher panel read this
+let logs = [];
+let alertTimeout = null;
+let teacherPw = 'professor123';
+let pendingEndStudentIdx = -1;
+let teacherRefreshInterval = null;
+
+// ══════════════════════════════════════════════
+//  PARTICLES
+// ══════════════════════════════════════════════
+(function() {
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  let W, H, dots = [];
+  function resize() { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+  resize(); window.addEventListener('resize', resize);
+  for (let i = 0; i < 60; i++) dots.push({ x: Math.random()*1920, y: Math.random()*1080, vx: (Math.random()-.5)*.3, vy: (Math.random()-.5)*.3, r: Math.random()*1.5+.5, a: Math.random()*.4+.1 });
+  function frame() {
+    ctx.clearRect(0,0,W,H);
+    dots.forEach(d => {
+      d.x += d.vx; d.y += d.vy;
+      if (d.x<0) d.x=W; if (d.x>W) d.x=0; if (d.y<0) d.y=H; if (d.y>H) d.y=0;
+      ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(91,91,255,${d.a})`; ctx.fill();
+    });
+    requestAnimationFrame(frame);
+  }
+  frame();
+})();
+
+// ══════════════════════════════════════════════
+//  HELPERS
+// ══════════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function openModal(id)  { document.getElementById(id).classList.add('show'); }
+function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+function formatTime(s) {
+  const h = Math.floor(s/3600).toString().padStart(2,'0');
+  const m = Math.floor((s%3600)/60).toString().padStart(2,'0');
+  const sec = (s%60).toString().padStart(2,'0');
+  return `${h}:${m}:${sec}`;
+}
+function shake(id) {
+  const el = document.getElementById(id);
+  el.style.borderColor = 'var(--red)';
+  el.style.boxShadow = '0 0 0 3px var(--red-dim)';
+  setTimeout(() => { el.style.borderColor=''; el.style.boxShadow=''; }, 1500);
+}
+
+// ══════════════════════════════════════════════
+//  START EXAM
+// ══════════════════════════════════════════════
+function startExam() {
+  studentName  = document.getElementById('f-name').value.trim();
+  studentClass = document.getElementById('f-matricula').value.trim();
+  if (!studentName)  { shake('f-name');      return; }
+  if (!studentClass) { shake('f-matricula'); return; }
+
+  // Reset state
+  examStartTime   = Date.now();
+  infractionCount = 0;
+  isExamActive    = true;
+  logs            = [];
+
+  document.getElementById('bar-name').textContent  = studentName;
+  document.getElementById('bar-class').textContent = studentClass;
+  document.getElementById('inf-num').textContent   = '0';
+  document.getElementById('conn-pill').className   = 'status-pill ok';
+  document.getElementById('conn-txt').textContent  = 'Online';
+
+  // Register student in shared list
+  sessionStudents.push({
+    name: studentName, cls: studentClass,
+    startTime: examStartTime, infractions: 0,
+    status: 'online', finishTime: null
+  });
+
+  addLog('info', 'INÍCIO', `Avaliação iniciada — ${studentName} (${studentClass})`);
+
+  showScreen('exam-screen');
+  goFullscreen();
+  startTimer();
+  setupAntiCheat();
+  startWatermark();
+
+  const cfgUrl = document.getElementById('cfg-url').value.trim() || 'https://portugol.dev/';
+  document.getElementById('portugol-frame').src = cfgUrl;
+  document.getElementById('frame-loading').classList.remove('hidden');
+}
+
+// ══════════════════════════════════════════════
+//  FULLSCREEN
+// ══════════════════════════════════════════════
+function goFullscreen() {
+  const el = document.documentElement;
+  try {
+    if (el.requestFullscreen)       el.requestFullscreen();
+    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
+    else if (el.mozRequestFullScreen)    el.mozRequestFullScreen();
+  } catch(e) {}
+}
+
+// ══════════════════════════════════════════════
+//  TIMER
+// ══════════════════════════════════════════════
+function startTimer() {
+  clearInterval(examTimerInterval);
+  examTimerInterval = setInterval(() => {
+    if (!examStartTime) return;
+    const elapsed = Math.floor((Date.now() - examStartTime) / 1000);
+    document.getElementById('timer-el').textContent = formatTime(elapsed);
+
+    // sync infraction count to student record live
+    if (sessionStudents.length > 0) {
+      sessionStudents[sessionStudents.length - 1].infractions = infractionCount;
+    }
+
+    if (EXAM_DURATION > 0 && elapsed >= EXAM_DURATION) {
+      clearInterval(examTimerInterval);
+      autoTimeEnd();
+    }
+  }, 1000);
+}
+
+function autoTimeEnd() {
+  isExamActive = false;
+  const idx = sessionStudents.length - 1;
+  if (idx >= 0) {
+    sessionStudents[idx].status = 'time-end';
+    sessionStudents[idx].finishTime = Date.now();
+  }
+  addLog('warn', 'TEMPO', 'Tempo máximo da prova atingido — encerramento automático');
+  showAlert('⏱ Tempo esgotado! Avaliação encerrada.');
+  setTimeout(() => {
+    document.getElementById('blocked-num').textContent = infractionCount;
+    document.getElementById('blocked-screen').querySelector('.blocked-title').textContent = 'Tempo Esgotado';
+    document.getElementById('blocked-screen').querySelector('.blocked-sub').textContent = 'O tempo máximo da avaliação foi atingido. Procure o professor.';
+    document.getElementById('blocked-screen').querySelector('.blocked-icon').textContent = '⏱';
+    showScreen('blocked-screen');
+  }, 2000);
+}
+
+// ══════════════════════════════════════════════
+//  CONCLUDE (student finishes voluntarily)
+// ══════════════════════════════════════════════
+function concludeExam() {
+  closeModal('finish-modal');
+  isExamActive = false;
+  clearInterval(examTimerInterval);
+
+  const elapsed = Math.floor((Date.now() - examStartTime) / 1000);
+  const finishTime = new Date();
+  const idx = sessionStudents.length - 1;
+
+  if (idx >= 0) {
+    sessionStudents[idx].status = 'finished';
+    sessionStudents[idx].finishTime = Date.now();
+    sessionStudents[idx].infractions = infractionCount;
+  }
+
+  addLog('success', 'ENTREGA', `${studentName} entregou a avaliação — ${formatTime(elapsed)} — ${infractionCount} infração(ões)`);
+
+  // Fill conclusion screen
+  document.getElementById('cs-name').textContent    = studentName;
+  document.getElementById('cs-class').textContent   = studentClass;
+  document.getElementById('cs-time').textContent    = formatTime(elapsed);
+  const infEl = document.getElementById('cs-inf');
+  infEl.textContent = infractionCount === 0 ? '0 — Sem infrações ✓' : `${infractionCount} infração(ões)`;
+  infEl.className = 'val ' + (infractionCount === 0 ? 'green' : infractionCount < 3 ? 'amber' : 'red');
+  document.getElementById('cs-finish').textContent  = finishTime.toLocaleTimeString('pt-BR');
+
+  showScreen('concluded-screen');
+}
+
+// ══════════════════════════════════════════════
+//  INFRACTION
+// ══════════════════════════════════════════════
+function registerInfraction(type, msg) {
+  if (!isExamActive) return;
+  infractionCount++;
+  document.getElementById('inf-num').textContent = infractionCount;
+
+  // sync to student record immediately
+  if (sessionStudents.length > 0) {
+    sessionStudents[sessionStudents.length - 1].infractions = infractionCount;
+  }
+
+  addLog('danger', type, msg);
+  showAlert(`⚠ ${msg}`);
+  playBeep();
+
+  if (infractionCount >= MAX_INFRACTIONS) {
+    setTimeout(() => blockExam(), 600);
+  }
+}
+
+function showAlert(msg) {
+  clearTimeout(alertTimeout);
+  const overlay = document.getElementById('alert-overlay');
+  const toast   = document.getElementById('alert-toast');
+  toast.textContent = msg;
+  overlay.classList.add('active');
+  toast.classList.add('active');
+  alertTimeout = setTimeout(() => {
+    overlay.classList.remove('active');
+    toast.classList.remove('active');
+  }, 3000);
+}
+
+function playBeep() {
+  try {
+    const ctx  = new (window.AudioContext || window.webkitAudioContext)();
+    const osc  = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(440, ctx.currentTime + 0.3);
+    gain.gain.setValueAtTime(0.3, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+    osc.start(); osc.stop(ctx.currentTime + 0.3);
+  } catch(e) {}
+}
+
+function blockExam() {
+  isExamActive = false;
+  clearInterval(examTimerInterval);
+  const idx = sessionStudents.length - 1;
+  if (idx >= 0) {
+    sessionStudents[idx].status = 'blocked';
+    sessionStudents[idx].finishTime = Date.now();
+    sessionStudents[idx].infractions = infractionCount;
+  }
+  addLog('danger', 'BLOQUEIO', `Avaliação bloqueada — ${infractionCount} infrações.`);
+  document.getElementById('blocked-num').textContent = infractionCount;
+  document.getElementById('blocked-screen').querySelector('.blocked-title').textContent = 'Avaliação Bloqueada';
+  document.getElementById('blocked-screen').querySelector('.blocked-sub').textContent  = 'Número máximo de infrações atingido. Sua avaliação foi encerrada automaticamente. Procure o professor imediatamente.';
+  document.getElementById('blocked-screen').querySelector('.blocked-icon').textContent = '🚫';
+  showScreen('blocked-screen');
+}
+
+// ══════════════════════════════════════════════
+//  ANTI-CHEAT
+// ══════════════════════════════════════════════
+function setupAntiCheat() {
+  document.addEventListener('visibilitychange', onVisibilityChange);
+  document.addEventListener('fullscreenchange',        onFullscreenChange);
+  document.addEventListener('webkitfullscreenchange',  onFullscreenChange);
+  document.addEventListener('mozfullscreenchange',     onFullscreenChange);
+  window.addEventListener('blur',  onWindowBlur);
+  window.addEventListener('focus', onWindowFocus);
+  document.addEventListener('keydown', onKeyDown, true);
+  document.addEventListener('contextmenu', e => { e.preventDefault(); registerInfraction('CLIQUE DIREITO', 'Clique com botão direito bloqueado'); });
+  document.addEventListener('copy',  e => { if (isExamActive) { e.preventDefault(); registerInfraction('CTRL+C', 'Tentativa de copiar detectada'); } });
+  document.addEventListener('paste', e => { if (isExamActive) { e.preventDefault(); registerInfraction('CTRL+V', 'Tentativa de colar detectada'); } });
+  window.addEventListener('beforeunload', e => {
+    if (isExamActive) { e.preventDefault(); e.returnValue = 'A avaliação ainda está em andamento. Tem certeza que deseja sair?'; return e.returnValue; }
+  });
+  setInterval(detectDevTools, 3000);
+  checkOrientation();
+  window.addEventListener('orientationchange', checkOrientation);
+  window.addEventListener('resize', checkOrientation);
+}
+
+function onVisibilityChange() {
+  if (!isExamActive) return;
+  if (document.hidden) {
+    registerInfraction('TROCA DE ABA', 'Aluno minimizou ou trocou de aba');
+    setPillState('warn', 'Fora do foco');
+  } else {
+    setPillState('ok', 'Online');
+  }
+}
+function onFullscreenChange() {
+  if (!isExamActive) return;
+  const isFs = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement);
+  if (!isFs) {
+    registerInfraction('SAIU TELA CHEIA', 'Saiu do modo tela cheia');
+    setPillState('bad', 'Sem tela cheia');
+  } else {
+    setPillState('ok', 'Online');
+  }
+}
+function onWindowBlur() {
+  if (!isExamActive) return;
+  registerInfraction('ALT+TAB / BLUR', 'Foco saiu da janela da avaliação');
+  setPillState('warn', 'Fora do foco');
+}
+function onWindowFocus() {
+  if (isExamActive) setPillState('ok', 'Online');
+}
+function setPillState(cls, txt) {
+  document.getElementById('conn-pill').className = 'status-pill ' + cls;
+  document.getElementById('conn-txt').textContent = txt;
+}
+function onKeyDown(e) {
+  if (!isExamActive) return;
+  const ctrl = e.ctrlKey || e.metaKey;
+  const shift = e.shiftKey;
+  const k = e.key;
+  const block = (type, msg) => { e.preventDefault(); e.stopPropagation(); registerInfraction(type, msg); };
+  if (k === 'F12')                            return block('F12',           'DevTools (F12) bloqueado');
+  if (k === 'F5' || (ctrl && k.toLowerCase()==='r'))  return block('REFRESH',      'Tentativa de recarregar a página');
+  if (ctrl && k.toLowerCase()==='w')          return block('CTRL+W',        'Tentativa de fechar a aba');
+  if (ctrl && k.toLowerCase()==='t')          return block('CTRL+T',        'Tentativa de abrir nova aba');
+  if (ctrl && shift && k.toLowerCase()==='i') return block('CTRL+SHIFT+I',  'DevTools bloqueado');
+  if (ctrl && shift && k.toLowerCase()==='j') return block('CTRL+SHIFT+J',  'Console bloqueado');
+  if (ctrl && shift && k.toLowerCase()==='c') return block('CTRL+SHIFT+C',  'Inspetor bloqueado');
+  if (ctrl && k.toLowerCase()==='u')          return block('CTRL+U',        'Código-fonte bloqueado');
+  if (ctrl && k.toLowerCase()==='p')          return block('CTRL+P',        'Impressão bloqueada');
+  if (e.altKey && k === 'F4')                 return block('ALT+F4',        'Tentativa de fechar janela');
+  if (ctrl && k.toLowerCase()==='c')          return block('CTRL+C',        'Tentativa de copiar');
+  if (ctrl && k.toLowerCase()==='v')          return block('CTRL+V',        'Tentativa de colar');
+  if (k === 'Escape') { e.preventDefault(); e.stopPropagation(); setTimeout(() => { if (isExamActive) goFullscreen(); }, 300); }
+  if (k === 'Meta' || k === 'OS')             return block('WIN KEY',       'Tecla Windows pressionada');
+}
+function detectDevTools() {
+  if (!isExamActive) return;
+  if (window.outerWidth - window.innerWidth > 160 || window.outerHeight - window.innerHeight > 160) {
+    registerInfraction('DEVTOOLS', 'DevTools do navegador detectadas abertas');
+  }
+}
+function checkOrientation() {
+  if (!isExamActive) return;
+  const lock = document.getElementById('landscape-lock');
+  const isMobile = window.innerWidth < 768;
+  if (!isMobile) { lock.classList.remove('show'); return; }
+  window.innerHeight > window.innerWidth ? lock.classList.add('show') : lock.classList.remove('show');
+}
+
+// ══════════════════════════════════════════════
+//  WATERMARK
+// ══════════════════════════════════════════════
+function startWatermark() {
+  setInterval(() => {
+    const t = new Date().toLocaleTimeString('pt-BR');
+    document.getElementById('wm').textContent = `${studentName} | ${studentClass} | ${t}`;
+  }, 3000);
+}
+
+// ══════════════════════════════════════════════
+//  LOGS
+// ══════════════════════════════════════════════
+function addLog(type, category, message) {
+  const time = new Date().toLocaleTimeString('pt-BR');
+  logs.push({ time, type, category, message });
+  // if teacher panel is open refresh live
+  if (document.getElementById('teacher-screen').classList.contains('active')) {
+    renderLogsPanel();
+  }
+}
+function clearLogs() { logs = []; renderLogsPanel(); }
+function renderLogsPanel() {
+  const body = document.getElementById('logs-body');
+  const hdr  = document.getElementById('logs-count-header');
+  if (!body) return;
+  if (hdr) hdr.textContent = `Log de Eventos — ${logs.length} registro${logs.length !== 1 ? 's' : ''}`;
+  if (logs.length === 0) {
+    body.innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-muted);font-family:var(--mono);font-size:12px;">Nenhum evento registrado.</div>';
+    return;
+  }
+  body.innerHTML = logs.slice().reverse().map(l => {
+    const cls = l.type === 'danger' ? 'log-danger' : l.type === 'warn' ? 'log-warn' : l.type === 'success' ? 'log-success' : 'log-info';
+    return `<div class="log-entry"><span class="log-time">${l.time}</span><span class="log-type ${cls}">${l.category}</span><span class="log-msg">${l.message}</span></div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════
+//  TEACHER PANEL
+// ══════════════════════════════════════════════
+function openTeacherModal() { openModal('teacher-modal'); setTimeout(() => document.getElementById('teacher-pw').focus(), 80); }
+function checkTeacherPw() {
+  const pw = document.getElementById('teacher-pw').value;
+  if (pw === teacherPw) {
+    closeModal('teacher-modal');
+    document.getElementById('teacher-pw').value = '';
+    showTeacher();
+  } else {
+    shake('teacher-pw');
+  }
+}
+document.getElementById('teacher-pw').addEventListener('keydown', e => { if (e.key === 'Enter') checkTeacherPw(); });
+
+function showTeacher() {
+  renderStudentsList();
+  updateTeacherStats();
+  renderLogsPanel();
+  showScreen('teacher-screen');
+
+  // Live refresh every 2s while panel is open
+  clearInterval(teacherRefreshInterval);
+  teacherRefreshInterval = setInterval(() => {
+    if (document.getElementById('teacher-screen').classList.contains('active')) {
+      renderStudentsList();
+      updateTeacherStats();
+      document.getElementById('teacher-datetime').textContent = new Date().toLocaleString('pt-BR');
+    } else {
+      clearInterval(teacherRefreshInterval);
+    }
+  }, 2000);
+}
+
+function closeTeacher() {
+  clearInterval(teacherRefreshInterval);
+  showScreen('login-screen');
+}
+
+function updateTeacherStats() {
+  const online   = sessionStudents.filter(s => s.status === 'online').length;
+  const finished = sessionStudents.filter(s => s.status === 'finished').length;
+  const blocked  = sessionStudents.filter(s => s.status === 'blocked').length;
+  const totalInf = sessionStudents.reduce((a, s) => a + s.infractions, 0);
+
+  document.getElementById('ts-online').textContent     = online;
+  document.getElementById('ts-finished').textContent   = finished;
+  document.getElementById('ts-infractions').textContent= totalInf;
+  document.getElementById('ts-blocked').textContent    = blocked;
+
+  if (sessionStudents.length > 0) {
+    const now = Date.now();
+    const avg = sessionStudents.reduce((a, s) => {
+      const end = s.finishTime || now;
+      return a + Math.floor((end - s.startTime) / 1000);
+    }, 0) / sessionStudents.length;
+    document.getElementById('ts-avgtime').textContent = formatTime(Math.round(avg));
+  }
+}
+
+function renderStudentsList() {
+  const list = document.getElementById('students-list');
+  if (!list) return;
+  if (sessionStudents.length === 0) {
+    list.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-muted);font-family:var(--mono);font-size:13px;">Nenhum aluno em avaliação ainda.</div>';
+    return;
+  }
+  const now = Date.now();
+  list.innerHTML = sessionStudents.map((s, i) => {
+    const end     = s.finishTime || now;
+    const elapsed = Math.floor((end - s.startTime) / 1000);
+    const infCls  = s.infractions === 0 ? 'inf-0' : s.infractions < 3 ? 'inf-low' : 'inf-high';
+
+    let dotColor, dotAnim, statusLabel;
+    switch(s.status) {
+      case 'online':    dotColor='var(--green)';         dotAnim='pulse-anim 2s infinite'; statusLabel='<span style="color:var(--green)">● Online</span>';    break;
+      case 'finished':  dotColor='var(--accent-glow)';   dotAnim='none';                  statusLabel='<span style="color:var(--accent-glow)">✓ Entregue</span>'; break;
+      case 'blocked':   dotColor='var(--red)';           dotAnim='none';                  statusLabel='<span style="color:var(--red)">✗ Bloqueado</span>';  break;
+      case 'time-end':  dotColor='var(--amber)';         dotAnim='none';                  statusLabel='<span style="color:var(--amber)">⏱ Tempo end.</span>';break;
+      default:          dotColor='var(--text-muted)';    dotAnim='none';                  statusLabel='<span style="color:var(--text-muted)">—</span>';
+    }
+
+    const canEnd = (s.status === 'online');
+    return `<div class="student-row">
+      <div>
+        <div class="st-name"><span class="online-dot" style="background:${dotColor};animation:${dotAnim}"></span>${s.name}</div>
+        <div class="st-class">${s.cls}</div>
+      </div>
+      <div class="st-time">${formatTime(elapsed)}</div>
+      <div><span class="infraction-badge ${infCls}">${s.infractions}</span></div>
+      <div style="font-size:12px;">${statusLabel}</div>
+      <div>
+        ${canEnd ? `<button class="btn-sm danger" onclick="askEndStudent(${i})" style="font-size:10px;padding:4px 8px;">Encerrar</button>` : '<span style="font-size:11px;color:var(--text-muted);font-family:var(--mono);">—</span>'}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ─── Encerrar aluno (com confirmação) ─────────
+let _pendingEnd = -1;
+function askEndStudent(idx) {
+  _pendingEnd = idx;
+  const s = sessionStudents[idx];
+  document.getElementById('end-student-msg').textContent = `Deseja encerrar a prova de "${s.name} (${s.cls})"? Esta ação não pode ser desfeita.`;
+  openModal('end-student-modal');
+}
+function confirmEndStudent() {
+  closeModal('end-student-modal');
+  if (_pendingEnd < 0 || !sessionStudents[_pendingEnd]) return;
+  const s = sessionStudents[_pendingEnd];
+  s.status = 'blocked';
+  s.finishTime = Date.now();
+  addLog('warn', 'PROFESSOR', `Prova encerrada manualmente pelo professor — ${s.name}`);
+  renderStudentsList();
+  updateTeacherStats();
+  _pendingEnd = -1;
+}
+
+// ─── Tabs ─────────────────────────────────────
+function switchTab(tab) {
+  ['students','logs','config'].forEach(t => {
+    document.getElementById('tab-btn-' + t).classList.toggle('active', t === tab);
+    document.getElementById('tab-' + t).classList.toggle('active', t === tab);
+  });
+  if (tab === 'logs') renderLogsPanel();
+}
+
+// ─── Config ───────────────────────────────────
+function applyConfig() {
+  MAX_INFRACTIONS = parseInt(document.getElementById('cfg-inf-limit').value);
+  EXAM_DURATION   = parseInt(document.getElementById('cfg-duration').value) * 60;
+  const newPw = document.getElementById('cfg-pw').value.trim();
+  if (newPw) { teacherPw = newPw; document.getElementById('cfg-pw').value = ''; }
+  const url = document.getElementById('cfg-url').value.trim();
+  if (url && isExamActive) document.getElementById('portugol-frame').src = url;
+  addLog('info', 'CONFIG', `Configurações: Limite=${MAX_INFRACTIONS}inf, Duração=${EXAM_DURATION/60}min`);
+  showAlert('✓ Configurações aplicadas!');
+}
+
+// ─── Export ───────────────────────────────────
+function exportReport() {
+  const lines = [
+    'RELATÓRIO DE AVALIAÇÃO — FISCAL DE PROVA v2.0',
+    '='.repeat(52),
+    `Gerado em: ${new Date().toLocaleString('pt-BR')}`,
+    `Configurações: Limite de infrações=${MAX_INFRACTIONS}, Duração=${EXAM_DURATION/60}min`,
+    '',
+    'RESUMO DE ALUNOS:',
+    '-'.repeat(40),
+    ...sessionStudents.map(s => {
+      const end = s.finishTime || Date.now();
+      const dur = formatTime(Math.floor((end - s.startTime) / 1000));
+      return `  ${s.name} (${s.cls})\n    Duração: ${dur} | Infrações: ${s.infractions} | Status: ${s.status}`;
+    }),
+    '',
+    'LOG DE EVENTOS:',
+    '-'.repeat(40),
+    ...logs.map(l => `  [${l.time}] [${l.category}] ${l.message}`)
+  ];
+  const w = window.open('', '_blank');
+  if (!w) { alert('Permita pop-ups para exportar o relatório.'); return; }
+  w.document.write(`<!DOCTYPE html><html><head><title>Relatório — Fiscal de Prova</title>
+  <style>body{font-family:monospace;font-size:13px;padding:32px;background:#fff;color:#111;line-height:1.7;white-space:pre-wrap;}</style>
+  </head><body>${lines.join('\n')}</body></html>`);
+  w.document.close();
+  setTimeout(() => w.print(), 500);
+}
+
+// ══════════════════════════════════════════════
+//  GLOBAL GUARDS
+// ══════════════════════════════════════════════
+document.addEventListener('selectstart', e => {
+  if (isExamActive && !e.target.closest('input,textarea,#portugol-frame')) e.preventDefault();
+});
+document.addEventListener('dragstart', e => { if (isExamActive) e.preventDefault(); });
+</script>
+</body>
+</html>
